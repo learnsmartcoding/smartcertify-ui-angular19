@@ -17,12 +17,11 @@ export const environment: EnvironmentConfiguration = {
   production: true,
   apiUrl: serverUrl,
   adb2cConfig: {
-    clientId: '588fe00e-c38a-429b-a2bb-911ca90643a7',
-    readScopeUrl: 'https://smartlearnbykarthik.onmicrosoft.com/smartcertify/dev/api/User.Read',
-    writeScopeUrl: 'https://smartlearnbykarthik.onmicrosoft.com/smartcertify/dev/api/User.Write',
+    clientId:  'bd0dc0fe-b203-43c2-9b66-b13d3a6e55d0',
+    authority: 'https://LearnWithKarthik.ciamlogin.com/',
     scopeUrls:[
-      'https://smartlearnbykarthik.onmicrosoft.com/smartcertify/dev/api/User.Read',
-      'https://smartlearnbykarthik.onmicrosoft.com/smartcertify/dev/api/User.Write'
+      'api://f95e12ed-4803-49df-881b-15fefe8b8343/User.Read',
+      'api://f95e12ed-4803-49df-881b-15fefe8b8343/User.Write'
     ],
     apiEndpointUrl: serverUrl
   },

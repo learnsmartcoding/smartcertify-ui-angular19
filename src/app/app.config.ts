@@ -75,12 +75,11 @@ export const b2cPolicies = {
 
 export function MSALInstanceFactory(): IPublicClientApplication {
   return new PublicClientApplication({
-    auth: {
-      clientId: environment.adb2cConfig.clientId,
-      authority: b2cPolicies.authorities.signUpSignIn.authority, //environment.msalConfig.auth.authority,
-      knownAuthorities: [b2cPolicies.authorityDomain], // Mark your B2C tenant's domain as trusted.
-      redirectUri: '/',
-      postLogoutRedirectUri: '/',
+   auth: {
+      clientId: environment.adb2cConfig.clientId, // Replace the placeholder with your application ID
+        authority: environment.adb2cConfig.authority, // Replace the placeholder with your tenant subdomain
+        redirectUri: '/auth', // Points to window.location.origin by default. You must register this URI on Microsoft Entra admin center/App Registration.
+        postLogoutRedirectUri: '/', // Points to window.location.origin by default
     },
     cache: {
       cacheLocation: BrowserCacheLocation.LocalStorage,

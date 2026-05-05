@@ -1,69 +1,80 @@
-<div class="home-container">
-    <!-- Hero Section -->
-    <div class="hero-section text-center text-white">
-      <div class="hero-content">
-        <h1 class="display-4 fw-bold">Welcome to SmartCertify</h1>
-        <p class="lead">Empowering you to test your knowledge and achieve certifications with ease.</p>
-        <a class="btn btn-primary btn-lg mt-3" href="/courses">Start Your Journey</a>
+<main class="home-page">
+  <section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <span class="eyebrow">Practice exams for modern developers</span>
+      <h1>SmartCertify</h1>
+      <p>
+        Prepare for certification with focused question banks, practice mode, resumable exams, and clear review after every attempt.
+      </p>
+      <div class="hero-actions">
+        <a class="btn-primary-action" routerLink="/courses">
+          <i class="bi bi-play-circle"></i>
+          Start Your Journey
+        </a>
+        <a class="btn-secondary-action" routerLink="/user-exams">
+          <i class="bi bi-journal-check"></i>
+          My Exams
+        </a>
       </div>
     </div>
-  
-    <!-- Features Section -->
-    <div class="container my-5">
-      <div class="row text-center">
-        <div class="col-md-4">
-          <div class="feature-card shadow-sm p-4 rounded">
-            <i class="bi bi-journal-check display-4 text-primary"></i>
-            <h3 class="mt-3">Test Your Knowledge</h3>
-            <p>Take quizzes and evaluate your skills in various tech stacks like Angular, .NET Core, and React.</p>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="feature-card shadow-sm p-4 rounded">
-            <i class="bi bi-award display-4 text-warning"></i>
-            <h3 class="mt-3">Earn Certifications</h3>
-            <p>Complete courses and earn industry-recognized certifications to showcase your expertise.</p>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="feature-card shadow-sm p-4 rounded">
-            <i class="bi bi-clock-history display-4 text-success"></i>
-            <h3 class="mt-3">Resume Anytime</h3>
-            <p>Flexible learning that allows you to start, pause, and resume tests at your convenience.</p>
-          </div>
-        </div>
+    <div class="hero-panel" aria-label="Exam readiness summary">
+      <div>
+        <span>Exam readiness</span>
+        <strong>82%</strong>
       </div>
+      <div class="progress-track"><span></span></div>
+      <ul>
+        <li><i class="bi bi-check2-circle"></i> Guided practice sessions</li>
+        <li><i class="bi bi-arrow-repeat"></i> Resume anytime</li>
+        <li><i class="bi bi-award"></i> Review completed attempts</li>
+      </ul>
     </div>
-  
-    <!-- Tech Stack Section -->
-    <div class="container tech-stack-section text-center py-5">
-      <h2 class="mb-4">Explore Our Tech Stacks</h2>
-      <div class="row justify-content-center">
-        <div class="col-md-2">
-          <div class="tech-stack-card shadow-sm p-3 rounded">
-            <i class="bi bi-box-arrow-up-right text-primary display-5"></i>
-            <p class="mt-2">Angular</p>
-          </div>
-        </div>
-        <div class="col-md-2">
-          <div class="tech-stack-card shadow-sm p-3 rounded">
-            <i class="bi bi-gear-fill text-danger display-5"></i>
-            <p class="mt-2">.NET Core</p>
-          </div>
-        </div>
-        <div class="col-md-2">
-          <div class="tech-stack-card shadow-sm p-3 rounded">
-            <i class="bi bi-code-slash text-success display-5"></i>
-            <p class="mt-2">React</p>
-          </div>
-        </div>
-        <div class="col-md-2">
-          <div class="tech-stack-card shadow-sm p-3 rounded">
-            <i class="bi bi-cloud text-info display-5"></i>
-            <p class="mt-2">AZ-204</p>
-          </div>
-        </div>
-      </div>
+  </section>
+
+  <section class="feature-band">
+    <article class="feature-card">
+      <i class="bi bi-ui-checks-grid"></i>
+      <h2>Practice With Purpose</h2>
+      <p>Work through questions designed around real technology topics and certification-style thinking.</p>
+    </article>
+    <article class="feature-card">
+      <i class="bi bi-bar-chart-line"></i>
+      <h2>Review Your Results</h2>
+      <p>See what you answered, revisit weak areas, and keep improving from one attempt to the next.</p>
+    </article>
+    <article class="feature-card">
+      <i class="bi bi-lightning-charge"></i>
+      <h2>Use Practice Mode</h2>
+      <p>Learn without pressure, then switch into exam mode when you are ready to validate your skills.</p>
+    </article>
+  </section>
+
+  <section class="learning-flow">
+    <div class="section-copy">
+      <span class="eyebrow">Built for certification prep</span>
+      <h2>From course selection to confident exam completion</h2>
     </div>
-  </div>
-  
+    <div class="flow-steps">
+      <span><i class="bi bi-search"></i> Choose a course</span>
+      <span><i class="bi bi-pencil-square"></i> Take the test</span>
+      <span><i class="bi bi-journal-check"></i> Resume progress</span>
+      <span><i class="bi bi-trophy"></i> Review results</span>
+    </div>
+  </section>
+
+  <section class="tech-section">
+    <div class="section-copy">
+      <span class="eyebrow">Popular tracks</span>
+      <h2>Explore Tech Stacks</h2>
+    </div>
+    <div class="tech-grid">
+      <div class="tech-card angular"><i class="bi bi-triangle"></i><span>Angular</span></div>
+      <div class="tech-card dotnet"><i class="bi bi-braces"></i><span>.NET Core</span></div>
+      <div class="tech-card react"><i class="bi bi-code-slash"></i><span>React</span></div>
+      <div class="tech-card azure"><i class="bi bi-cloud"></i><span>Azure</span></div>
+      <div class="tech-card docker"><i class="bi bi-box-seam"></i><span>Docker</span></div>
+      <div class="tech-card js"><i class="bi bi-filetype-js"></i><span>JavaScript</span></div>
+    </div>
+  </section>
+</main>

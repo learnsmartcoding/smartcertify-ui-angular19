@@ -1,107 +1,110 @@
-<!-- <div class="user-exams-container">
-    <h1>User Exams</h1>
-    <div class="exam-grid">
-      <div class="exam-card" *ngFor="let exam of userExams">
-        <h3 class="exam-title">{{ exam.title }}</h3>
-        <div class="exam-info">
-          <p><strong>Status:</strong> <span [class]="exam.status | lowercase">{{ exam.status }}</span></p>
-          <p><strong>Started:</strong> {{ exam.startedOn | date: 'short' }}</p>
-          <p><strong>Finished:</strong> 
-            {{ exam.finishedOn ? (exam.finishedOn | date: 'short') : 'In Progress' }}
-          </p>
-        </div>
-        <p class="exam-description">{{ exam.description }}</p>
-        <div class="exam-actions">
-          <button 
-            class="btn resume-btn" 
-            *ngIf="!exam.finishedOn" 
-            (click)="resumeExam(exam.examId)">
-            Resume Exam
-          </button>
-        </div>
-      </div>
+<section class="user-exams-shell">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">My learning workspace</p>
+      <h1>User Exams</h1>
+      <p class="heading-copy">
+        Continue active exams, review completed attempts, and reopen practice sessions.
+      </p>
     </div>
   </div>
-   -->
-<!-- 
-   <div class="user-exams-container">
-    <h1>User Exams</h1>
-    <div class="exam-list">
-      <div class="exam-card" *ngFor="let exam of userExams">
-        <div class="exam-details">
-          <h2 class="exam-title">{{ exam.title }}</h2>
-          <p class="exam-description">{{ exam.description }}</p>
-          <div class="exam-info">
-            <span class="exam-status" [class]="exam.status | lowercase">{{ exam.status }}</span>
-            <span><strong>Started:</strong> {{ exam.startedOn | date: 'short' }}</span>
-            <span><strong>Finished:</strong> 
-              {{ exam.finishedOn ? (exam.finishedOn | date: 'short') : 'In Progress' }}
-            </span>
-          </div>
-        </div>
-        <div class="exam-actions">
-          <button 
-            class="btn resume-btn" 
-            *ngIf="!exam.finishedOn" 
-            (click)="resumeExam(exam.examId)">
-            Resume Exam
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-   -->
 
-   <div class="user-exams-container">
-    <h1>User Exams</h1>
-    <div class="exam-table-container">
-      <table class="exam-table">
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Status</th>
-            <th>Started On</th>
-            <th>Finished On</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let exam of userExams">
-            <td>{{ exam.title }}</td>
-            <td>{{ exam.description }}</td>
-            <td>
-                <span 
-                  class="status" 
-                  [ngClass]="{
-                    'in-progress': exam.status === 'In Progress',
-                    'completed': exam.status === 'Completed'
-                  }">
-                  {{ exam.status }}
-                </span>
-              </td>
-              
-            <td>{{ exam.startedOn | date: 'MMM d, y'  }}</td>
-            <td>
-              {{ exam.finishedOn ? (exam.finishedOn | date: 'MMM d, y' ) : 'In Progress' }}
-            </td>
-            <td>
-              <button 
-              class="btn view-btn" 
-              *ngIf="exam.finishedOn" 
-              (click)="takeToCompletedExam(exam.examId)">
-              View Details
-            </button>
-              <button 
-                class="btn resume-btn" 
-                *ngIf="!exam.finishedOn" 
-                (click)="resumeExam(exam.examId)">
-                Resume
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+  <div class="summary-grid" aria-label="Exam summary">
+    <div class="summary-card">
+      <span class="summary-icon total"><i class="bi bi-journal-check"></i></span>
+      <div>
+        <span class="summary-value">{{ totalExams }}</span>
+        <span class="summary-label">Total Exams</span>
+      </div>
+    </div>
+    <div class="summary-card">
+      <span class="summary-icon progress"><i class="bi bi-hourglass-split"></i></span>
+      <div>
+        <span class="summary-value">{{ inProgressCount }}</span>
+        <span class="summary-label">In Progress</span>
+      </div>
+    </div>
+    <div class="summary-card">
+      <span class="summary-icon completed"><i class="bi bi-check2-circle"></i></span>
+      <div>
+        <span class="summary-value">{{ completedCount }}</span>
+        <span class="summary-label">Completed</span>
+      </div>
+    </div>
+    <div class="summary-card">
+      <span class="summary-icon practice"><i class="bi bi-lightning-charge"></i></span>
+      <div>
+        <span class="summary-value">{{ practiceCount }}</span>
+        <span class="summary-label">Practice Mode</span>
+      </div>
     </div>
   </div>
-  
+
+  <div class="exam-list" *ngIf="userExams.length; else emptyState">
+    <article class="exam-row" *ngFor="let exam of userExams; trackBy: trackByExamId">
+      <div class="status-rail" [ngClass]="getStatusClass(exam)"></div>
+
+      <div class="exam-main">
+        <div class="exam-title-line">
+          <h2>{{ exam.title }}</h2>
+          <span class="status-pill" [ngClass]="getStatusClass(exam)">
+            <i class="bi" [ngClass]="isCompleted(exam) ? 'bi-check2' : 'bi-clock'"></i>
+            {{ getStatusLabel(exam) }}
+          </span>
+        </div>
+
+        <p class="exam-description">{{ exam.description || 'No description available.' }}</p>
+
+        <div class="exam-meta">
+          <span class="meta-item">
+            <i class="bi bi-calendar-event"></i>
+            Started {{ exam.startedOn | date: 'MMM d, y' }}
+          </span>
+          <span class="meta-item">
+            <i class="bi" [ngClass]="exam.finishedOn ? 'bi-calendar-check' : 'bi-arrow-repeat'"></i>
+            {{ exam.finishedOn ? ('Finished ' + (exam.finishedOn | date: 'MMM d, y')) : 'Still in progress' }}
+          </span>
+          <span class="mode-chip" [class.practice]="exam.isPracticeMode">
+            <i class="bi" [ngClass]="exam.isPracticeMode ? 'bi-lightning-charge' : 'bi-mortarboard'"></i>
+            {{ exam.isPracticeMode ? 'Practice' : 'Exam' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="exam-actions">
+        <button
+          type="button"
+          class="action-btn primary"
+          *ngIf="!isCompleted(exam)"
+          (click)="resumeExam(exam.examId)">
+          <i class="bi bi-play-fill"></i>
+          Resume
+        </button>
+        <button
+          type="button"
+          class="action-btn secondary"
+          *ngIf="isCompleted(exam)"
+          (click)="takeToCompletedExam(exam.examId)">
+          <i class="bi bi-bar-chart-line"></i>
+          View Details
+        </button>
+        <button
+          type="button"
+          class="action-btn ghost"
+          *ngIf="exam.isPracticeMode && isCompleted(exam)"
+          (click)="resumeExam(exam.examId)">
+          <i class="bi bi-arrow-counterclockwise"></i>
+          Practice View
+        </button>
+      </div>
+    </article>
+  </div>
+
+  <ng-template #emptyState>
+    <div class="empty-state">
+      <i class="bi bi-journal-text"></i>
+      <h2>No exams yet</h2>
+      <p>Your assigned and started exams will appear here once they are available.</p>
+    </div>
+  </ng-template>
+</section>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import {
   FormGroup,
   FormBuilder,
@@ -8,10 +8,10 @@ import {
 } from '@angular/forms';
 
 import { CommonModule } from '@angular/common';
-import { LoginService } from '../../../services/login.service';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { UserProfileService } from '../../../services/user-profile.service';
+import { CurrentUserService } from '../../../services/current-user.service';
 
 @Component({
   selector: 'app-update-profile',
@@ -30,9 +30,11 @@ export class UpdateProfileComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private userProfileService: UserProfileService,
-    private loginService: LoginService,
+    private currentUserService: CurrentUserService,
     private toastrService: ToastrService,
-    private router:Router
+    private router:Router,
+    private ngZone: NgZone,
+    private changeDetectorRef: ChangeDetectorRef
   ) {
     // Initialize form with bio control, conditionally required
     this.profileForm = this.fb.group({
@@ -41,16 +43,14 @@ export class UpdateProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if(!this.loginService.isLoggedIn){
+    this.currentUserService.loadIfAuthenticated().subscribe((user) => {
+      this.ngZone.run(() => {
+      if (!user) {
       this.router.navigateByUrl('/home');
       return;
     }
-    this.loginService.userId$.subscribe((id) => {
-      this.userProfileId = id; // Update user ID when login service emits new value
-      
-    });
 
-    //this.userProfileId = this.loginService.userId; // Assuming user ID is from loginService
+      this.userProfileId = user.userId;
  
     if (this.isInstructor) {
       this.profileForm.get('bio')?.enable(); // Enable bio if instructor
@@ -62,17 +62,22 @@ export class UpdateProfileComponent implements OnInit {
     // Fetch user profile data on component load
     this.userProfileService.getUserProfile(this.userProfileId).subscribe(
       (response) => {
+        this.ngZone.run(() => {
         this.profileForm.patchValue({
           bio: response.bio || '', // Pre-fill bio if available
         });
         if (response.profileImageUrl) {
           this.previewUrl = response.profileImageUrl;
         }
+        this.changeDetectorRef.detectChanges();
+        });
       },
       (error) => {
         this.toastrService.error('Error fetching user profile');
       }
     );
+      });
+    });
   }
 
   onFileSelected(event: any) {
@@ -88,7 +93,7 @@ export class UpdateProfileComponent implements OnInit {
 
   onSubmit() {
     const formData = new FormData();    
-    formData.append('userId', this.loginService.userId.toString());
+    formData.append('userId', this.currentUserService.userId.toString());
     formData.append('picture', this.selectedFile);
 
     this.userProfileService.updateProfile(formData).subscribe(

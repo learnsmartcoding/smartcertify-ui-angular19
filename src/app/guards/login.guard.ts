@@ -3,11 +3,11 @@ import {
   CanActivateFn,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
-  Router,
 } from '@angular/router';
 
 import { ToastrService } from 'ngx-toastr';
 import { LoginService } from '../services/login.service';
+import { PostLoginRedirectService } from '../services/post-login-redirect.service';
 
 export const canActivateGuard: CanActivateFn = (
   route: ActivatedRouteSnapshot,
@@ -15,6 +15,9 @@ export const canActivateGuard: CanActivateFn = (
 ) => {
   const authService = inject(LoginService);
   const toastrService = inject(ToastrService);
+  const postLoginRedirectService = inject(PostLoginRedirectService);
+
+  authService.refreshFromMsal();
 
   if (authService.isLoggedIn) {
     return true;
@@ -23,7 +26,8 @@ export const canActivateGuard: CanActivateFn = (
       'You need to login to access the feature.',
       'Login Required'
     );
-    authService.login(); //This triggers ad b2c login flow.
+    postLoginRedirectService.set(state.url);
+    authService.login();
     return false;
   }
 };

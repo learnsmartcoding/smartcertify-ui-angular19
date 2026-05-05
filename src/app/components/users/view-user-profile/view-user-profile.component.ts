@@ -1,7 +1,7 @@
 import { Component, Input, input, OnInit } from '@angular/core';
 import { UserModel } from '../../../models/usermodel';
 import { UserProfileService } from '../../../services/user-profile.service';
-import { LoginService } from '../../../services/login.service';
+import { CurrentUserService } from '../../../services/current-user.service';
 
 @Component({
   selector: 'app-view-user-profile',
@@ -24,11 +24,14 @@ export class ViewUserProfileComponent implements OnInit {
     bio: '',
   };
 
-  constructor(private userService: UserProfileService, private loginService: LoginService) {}
+  constructor(
+    private userService: UserProfileService,
+    private currentUserService: CurrentUserService
+  ) {}
 
   ngOnInit(): void {
-    this.loginService.userId$.subscribe((id) => {
-      this.userId = id; // Update user ID when login service emits new value
+    this.currentUserService.loadCurrentUser().subscribe((user) => {
+      this.userId = user.userId;
       this.getUserProfile();
     });
   }

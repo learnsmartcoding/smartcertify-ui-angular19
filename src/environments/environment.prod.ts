@@ -15,13 +15,15 @@ export const environment: EnvironmentConfiguration = {
   env_name: 'prod',
   production: true,
   apiUrl: serverUrl,
-  adb2cConfig: {
-    clientId: 'c027eec5-9ef7-4749-8d18-712f0c400667',
-    authority: 'https://LearnWithKarthik.ciamlogin.com/',
-    scopeUrls:[
-      'api://f95e12ed-4803-49df-881b-15fefe8b8343/User.Read',
-      'api://f95e12ed-4803-49df-881b-15fefe8b8343/User.Write'
-    ],
+ entraIdConfig: {
+    clientId: 'c7550f4d-936c-442a-90ac-fa5f048d6406',
+    authority: 'https://learnsmartcodingidentity.ciamlogin.com/',
+    redirectUri: 'http://localhost:4200/auth',
+    postLogoutRedirectUri: 'http://localhost:4200/courses',
+    scopeUrls: {
+      userReadScope: 'api://989e8bb2-54fc-4ea4-8747-e0912b045bf0/User.Read',
+      userWriteScope: 'api://989e8bb2-54fc-4ea4-8747-e0912b045bf0/User.Write',
+    },
     apiEndpointUrl: 'https://smartcertify-api.azurewebsites.net/api'
   },
   cacheTimeInMinutes: 30,

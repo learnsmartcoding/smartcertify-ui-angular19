@@ -1,4 +1,4 @@
-<div class="container mt-5">
+<div class="container mt-5" #coursesSection>
     <h1 class="text-center mb-4 display-4 text-primary">Explore Our Courses</h1>
     <p class="text-center text-muted mb-4">
         Discover our comprehensive and engaging courses designed to boost your skills.
@@ -7,16 +7,26 @@
     <!-- Technology Filter -->
     <app-tech-filter [techList]="techData" (filterCourses)="onTechSelected($event)"></app-tech-filter>
 
-    <!-- Test Availability Toggle -->
-    <div class="d-flex justify-content-center align-items-center mt-3 mb-4">
-        <label class="form-check-label me-2" for="toggleTests">Show Available Tests</label>
-        <input type="checkbox" class="form-check-input" id="toggleTests" [(ngModel)]="onlyAvailableTest"
-            (change)="applyFilters()" />
-    </div>
 
     <!-- Courses List -->
     <div class="container py-4">
         <div class="row justify-content-center">
+            <!-- Filter and Search Row -->
+            <div class="d-flex justify-content-between align-items-center flex-wrap mb-4 px-3">
+                <!-- Search Bar -->
+                <input type="text" class="form-control me-3 mb-2" style="flex: 1 1 60%; min-width: 250px;"
+                    placeholder="Search by title or description..." [(ngModel)]="searchText"
+                    (ngModelChange)="applyFilters()" />
+
+                <!-- Test Availability Toggle -->
+                <div class="form-check d-flex align-items-center mb-2">
+                    <input type="checkbox" class="form-check-input me-2" id="toggleTests"
+                        [(ngModel)]="onlyAvailableTest" (change)="applyFilters()" />
+                    <label class="form-check-label" for="toggleTests">Show Available Tests</label>
+                </div>
+            </div>
+
+
             <div *ngFor="let course of filteredCourses" class="col-md-6 col-lg-4 mb-4">
                 <div class="card course-card">
                     <div class="card-header">
@@ -28,7 +38,7 @@
                         <p>There are {{course.questionCount}} questions to evaluate your knowledge.</p>
                     </div>
                     <div class="card-footer text-center">
-                        <button class="btn btn-primary" [disabled]="!userId || !course.questionCount"
+                        <button class="btn btn-primary" [disabled]="!course.questionCount"
                             (click)="startTest(course.courseId)">
                             Start a Test
                         </button>

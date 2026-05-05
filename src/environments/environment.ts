@@ -14,15 +14,17 @@ const serverUrl='https://localhost:7209/api';
 // The list of file replacements can be found in `angular.json`.
 export const environment: EnvironmentConfiguration = {
   env_name: 'dev',
-  production: true,
+  production: false,
   apiUrl: serverUrl,
-  adb2cConfig: {
-    clientId:  'bd0dc0fe-b203-43c2-9b66-b13d3a6e55d0',
-    authority: 'https://LearnWithKarthik.ciamlogin.com/',
-    scopeUrls:[
-      'api://f95e12ed-4803-49df-881b-15fefe8b8343/User.Read',
-      'api://f95e12ed-4803-49df-881b-15fefe8b8343/User.Write'
-    ],
+  entraIdConfig: {
+    clientId: 'c7550f4d-936c-442a-90ac-fa5f048d6406',
+    authority: 'https://learnsmartcodingidentity.ciamlogin.com/',
+    redirectUri: 'http://localhost:4200/auth',
+    postLogoutRedirectUri: 'http://localhost:4200/courses',
+    scopeUrls: {
+      userReadScope: 'api://989e8bb2-54fc-4ea4-8747-e0912b045bf0/User.Read',
+      userWriteScope: 'api://989e8bb2-54fc-4ea4-8747-e0912b045bf0/User.Write',
+    },
     apiEndpointUrl: serverUrl
   },
   cacheTimeInMinutes: 30,

@@ -2,11 +2,16 @@ export interface EnvironmentConfiguration {
     env_name: string;
     production: boolean;
     apiUrl: string;
-    adb2cConfig: {
+    entraIdConfig: {
         clientId: string;
-        scopeUrls:string[];
-        apiEndpointUrl: string;
         authority: string;
+        redirectUri: string;
+        postLogoutRedirectUri: string;
+        scopeUrls: {
+            userReadScope: string;
+            userWriteScope: string;
+        };
+        apiEndpointUrl: string;
     }
     cacheTimeInMinutes: number;
 }

@@ -52,7 +52,10 @@ export class GetExamFeedbackAndSubmitComponent {
     this.examService.submitFeedback(feedbackPayload).subscribe(
       (response) => {
         this.toastr.info('Thank you for your feedback! Exam completed.');
-        
+        // Navigate to confirmation or summary page
+        //this.router.navigate(['/user-exams']);
+        //todo
+        //this.router.navigate(['/exam-summary'], { queryParams: { examId: this.examId } });
         this.showCertificate = true;
       },
       (error) => {

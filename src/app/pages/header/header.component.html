@@ -47,16 +47,22 @@
 
                     </ul>
                 </li> -->
-                @if(this.isAdmin){
-                <li class="nav-item">
-                    <a class="nav-link" [routerLink]="['/admin/question/list']" routerLinkActive="active">View
-                        Questions</a>
+                <li class="nav-item dropdown" *ngIf="isAdmin">
+                    <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Admin
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                        <li>
+                            <a class="dropdown-item" [routerLink]="['/admin/question/list']"
+                                routerLinkActive="active">Questions</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" [routerLink]="['/admin/question/create']"
+                                routerLinkActive="active">Create Question</a>
+                        </li>
+                    </ul>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" [routerLink]="['/admin/question/create']" routerLinkActive="active">Create
-                        Question</a>
-                </li>
-                }
 
 
                 <!-- About and Contact -->
@@ -81,13 +87,16 @@
             <ul class="navbar-nav">
                 <li class="nav-item d-flex align-items-center">
                     <!-- Profile Picture -->
-                    <img *ngIf="profilePictureUrl; else defaultAvatar" [src]="profilePictureUrl" alt="Profile Picture"
-                        (click)="editProfile()" class="rounded-circle"
-                        style="width: 40px; height: 40px; object-fit: cover; cursor: pointer;" />
+                    <img *ngIf="loginDisplay && profilePictureUrl && !profileImageFailed; else defaultAvatar"
+                        [attr.src]="profilePictureUrl" alt="Profile Picture" referrerpolicy="no-referrer"
+                        (error)="onProfileImageError()" (click)="editProfile()" class="profile-avatar rounded-circle" />
 
                     <!-- Default Avatar -->
                     <ng-template #defaultAvatar>
-                        <a *ngIf="loginDisplay" title="Edit Profile"><i class="fa fa-user nav-link"></i></a>
+                        <button *ngIf="loginDisplay" type="button" class="profile-avatar profile-avatar-fallback"
+                            title="Edit Profile" (click)="editProfile()">
+                            {{ 'K' }}
+                        </button>
                     </ng-template>
                     <a class="nav-link" *ngIf="!loginDisplay" (click)="loginRedirect()">Login</a>
 

@@ -14,5 +14,6 @@ export interface QuestionDto {
     choiceText: string;
     isCode: boolean;
     isCorrect: boolean;
+    answerDetails: string;
   }
   

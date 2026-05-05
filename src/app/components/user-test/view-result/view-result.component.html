@@ -1,3 +1,3 @@
 <div>
-    <app-exam-details [examId]="examId" [showIsCorrectChoice]="true"></app-exam-details>
+    <app-exam-details *ngIf="examId > 0" [examId]="examId" [showIsCorrectChoice]="true"></app-exam-details>
 </div>

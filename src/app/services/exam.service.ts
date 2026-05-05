@@ -28,13 +28,13 @@ export class ExamService {
 
   getExamMetaData(examId: number): Observable<ExamMetaData> {
     return this.http.get<ExamMetaData>(
-      `${this.baseUrl}/Exam/exam-meta-data/${examId}`
+      `${this.baseUrl}/exam/exam-meta-data/${examId}`
     );
   }
 
   startExam(request: StartExamRequest): Observable<ExamMetaData> {
     return this.http.post<ExamMetaData>(
-      `${this.baseUrl}/Exam/start-exam`,
+      `${this.baseUrl}/exam/start-exam`,
       request
     );
   }

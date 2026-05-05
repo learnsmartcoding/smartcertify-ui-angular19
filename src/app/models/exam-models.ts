@@ -1,6 +1,8 @@
 export interface StartExamRequest {
   courseId: number;
   userId: number;
+  practiceMode?: boolean;
+  noOfQuestions?: number;
 }
 
 export interface ExamMetaData {
@@ -10,6 +12,7 @@ export interface ExamMetaData {
   status: string;
   startedOn: Date;
   finishedOn?: Date;
+  isPracticeMode: boolean;
 }
 
 export interface QuestionDetails {
@@ -28,6 +31,7 @@ export interface Choice {
   choiceText: string;
   isCode: boolean;
   isCorrect: boolean;
+  answerDetails: string;
 }
 
 export interface UserExamQuestions extends UpdateUserQuestionChoice {
@@ -55,6 +59,7 @@ export interface UserExam {
   status: string;
   startedOn: Date;
   finishedOn: Date;
+  isPracticeMode: boolean;
 }
 
 export interface ExamFeedback {

@@ -16,6 +16,13 @@ import { UpdateProfileComponent } from './components/users/update-profile/update
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
+  {
+    path: 'auth',
+    loadComponent: () =>
+      import('./components/auth-callback/auth-callback.component').then(
+        (m) => m.AuthCallbackComponent
+      ),
+  },
   { path: 'home', component: HomeComponent },
   {
     path: 'about',

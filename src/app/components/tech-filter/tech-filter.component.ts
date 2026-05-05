@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-tech-filter',
@@ -13,5 +13,40 @@ export class TechFilterComponent {
 
   selectTechnology(tech: string): void {
     this.filterCourses.emit(tech); // Emit selected tech to parent component
+  }
+
+  @ViewChild('techContainer', { static: true }) techContainer!: ElementRef;
+
+  scrollInterval: any;
+  isPaused = false;
+
+  ngAfterViewInit(): void {
+    this.startAutoScroll();
+  }
+
+  startAutoScroll() {
+    this.scrollInterval = setInterval(() => {
+      if (!this.isPaused) {
+        const container = this.techContainer.nativeElement;
+        container.scrollLeft += 1;
+
+        // Loop back when end is reached
+        if (container.scrollLeft + container.clientWidth >= container.scrollWidth) {
+          container.scrollLeft = 0;
+        }
+      }
+    }, 10); // Lower = faster scroll, try 20-40 ms
+  }
+
+  pauseScroll() {
+    this.isPaused = true;
+  }
+
+  resumeScroll() {
+    this.isPaused = false;
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.scrollInterval);
   }
 }

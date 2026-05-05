@@ -3,13 +3,12 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { QuestionDto } from '../models/question';
-import { LoginService } from './login.service';
 
 @Injectable({ providedIn: 'root' })
 export class QuestionService {
   
   private baseUrl = `${environment.apiUrl}/questions`;
-  constructor(private http: HttpClient, private loginService: LoginService) {}
+  constructor(private http: HttpClient) {}
 
   saveQuestionChoice(question: QuestionDto): Observable<any> {
     return this.http.post(`${this.baseUrl}/CreateQuestionChoices`, question);

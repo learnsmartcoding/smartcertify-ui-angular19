@@ -27,3 +27,23 @@
        display: block; /* Ensures the element respects height and scrolling */
   }
   
+
+  .table thead th {
+    vertical-align: middle;
+    text-align: center;
+  }
+  
+  .form-select {
+    min-width: 100%;
+    padding: 8px 12px;
+    border-radius: 6px;
+  }
+  
+  .table-hover tbody tr:hover {
+    background-color: #f1f8e9;
+  }
+  
+  .btn-group .btn {
+    margin-left: 4px;
+  }
+  

@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, NgZone } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Subject, filter, takeUntil } from 'rxjs';
 
@@ -22,8 +22,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Claim } from '../../models/claim';
 import { LoginService } from '../../services/login.service';
-import { b2cPolicies } from '../../app.config';
-import { UserProfileService } from '../../services/user-profile.service';
+import { CurrentUserService } from '../../services/current-user.service';
 
 @Component({
   selector: 'app-header',
@@ -38,6 +37,7 @@ export class HeaderComponent {
   private readonly _destroying$ = new Subject<void>();
   claims: Claim[] = [];
   profilePictureUrl = '';
+  profileImageFailed = false;
 
   constructor(
     @Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
@@ -45,27 +45,34 @@ export class HeaderComponent {
     private msalBroadcastService: MsalBroadcastService,
     private loginService: LoginService,
     private router: Router,
-    private userService: UserProfileService
+    private currentUserService: CurrentUserService,
+    private ngZone: NgZone,
+    private changeDetectorRef: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    this.loginService.claims$.subscribe((s) => {
-      const roles = s.filter((f) => f.claim === 'extension_userRoles');
+    this.currentUserService.currentUser$
+      .pipe(takeUntil(this._destroying$))
+      .subscribe((user) => {
+        this.ngZone.run(() => {
+          this.profilePictureUrl = user?.profileImageUrl?.trim() ?? '';
+          this.profileImageFailed = false;
+          this.isAdmin =
+            user?.roles?.some(
+              (role) => role.roleName.toLowerCase() === 'admin'
+            ) ?? false;
+          this.changeDetectorRef.detectChanges();
+        });
+      });
 
+    this.getUserInfo();
+    setInterval(() => {
       this.getUserInfo();
-      setInterval(() => {
-        this.getUserInfo();
-      }, 30000);
-
-      if (roles.length && !this.isAdmin) {
-        this.isAdmin =
-          roles[0].value.split(',').filter((f) => f === 'Admin').length > 0;
-      }
-    });
+    }, 300000);
 
     this.authService
       .handleRedirectObservable()
-      .subscribe((result: AuthenticationResult) => {
+      .subscribe((result: AuthenticationResult | null) => {
         if (result) {
           const redirectStartPage = localStorage.getItem('redirectStartPage'); // Retrieve the URL from local storage
           if (redirectStartPage) {
@@ -79,23 +86,6 @@ export class HeaderComponent {
     this.isIframe = window !== window.parent && !window.opener; // Remove this line to use Angular Universal
 
     this.setLoginDisplay();
-
-    this.authService.instance.enableAccountStorageEvents(); // Optional - This will enable ACCOUNT_ADDED and ACCOUNT_REMOVED events emitted when a user logs in or out of another tab or window
-    this.msalBroadcastService.msalSubject$
-      .pipe(
-        filter(
-          (msg: EventMessage) =>
-            msg.eventType === EventType.ACCOUNT_ADDED ||
-            msg.eventType === EventType.ACCOUNT_REMOVED
-        )
-      )
-      .subscribe((result: EventMessage) => {
-        if (this.authService.instance.getAllAccounts().length === 0) {
-          window.location.pathname = '/';
-        } else {
-          this.setLoginDisplay();
-        }
-      });
 
     //To subscribe for claims
     this.loginService.claims$.subscribe((c) => {
@@ -173,12 +163,7 @@ export class HeaderComponent {
   }
 
   editProfile() {
-    let editProfileFlowRequest: RedirectRequest | PopupRequest = {
-      authority: b2cPolicies.authorities.editProfile.authority,
-      scopes: [],
-    };
-
-    this.login(editProfileFlowRequest);
+    this.router.navigate(['/user/update-profile']);
   }
 
   login(userFlowRequest?: RedirectRequest | PopupRequest) {
@@ -217,12 +202,18 @@ export class HeaderComponent {
   }
 
   getUserInfo() {
-    if (this.loginService.userId && this.loginService.userId > 0) {
-      this.userService
-        .getUserProfile(this.loginService.userId)
-        .subscribe((s) => {
-          this.profilePictureUrl = s.profileImageUrl ? s.profileImageUrl : '';
-        });
-    }
+    this.currentUserService.loadIfAuthenticated().subscribe((user) => {
+      this.ngZone.run(() => {
+        this.profilePictureUrl = user?.profileImageUrl?.trim() ?? '';
+        this.profileImageFailed = false;
+        this.changeDetectorRef.detectChanges();
+      });
+    });
+  }
+
+  onProfileImageError(): void {
+    this.profileImageFailed = true;
+    this.profilePictureUrl = '';
+    this.changeDetectorRef.detectChanges();
   }
 }

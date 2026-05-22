@@ -11,11 +11,22 @@
                     <strong>Description:</strong> {{course?.description}}
                 </li>
                 <li class="list-group-item">
-                    <strong>Number of Questions:</strong> 10
+                    <strong>Number of Questions:</strong>
+                    <select class="form-select w-auto d-inline-block ms-2" [(ngModel)]="selectedQuestions"
+                        (change)="onQuestionChange()">
+                        <option *ngFor="let q of questionOptions" [value]="q">{{q}}</option>
+                    </select>
+                </li>
+
+
+                <li class="list-group-item">
+                    <strong>Duration:</strong> {{duration}} minutes
                 </li>
                 <li class="list-group-item">
-                    <strong>Duration:</strong> 15 minutes
+                    <strong>Practice Mode:</strong>
+                    <input type="checkbox" class="form-check-input ms-2" [(ngModel)]="isPracticeMode" />
                 </li>
+
                 <li class="list-group-item">
                     <strong>Passing Score:</strong> 70%
                 </li>
@@ -28,11 +39,8 @@
         <!-- Right Column -->
         <div class="col-md-6 d-flex align-items-center justify-content-center">
             <div class="image-container">
-                <img
-                    src="../../../../assets/certifications/certification.png"
-                    alt="Exam Preparation"
-                    class="img-fluid rounded shadow"
-                />
+                <img src="../../../../assets/certifications/certification.png" alt="Exam Preparation"
+                    class="img-fluid rounded shadow" />
             </div>
         </div>
     </div>

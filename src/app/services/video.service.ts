@@ -11,17 +11,231 @@ export interface Video{
   providedIn: 'root',
 })
 export class VideoService {
+
+  /** Original course-level filter — kept for backwards compatibility. */
   getVideos(filter: string = ''): Video[] {
-    if (!filter.trim()) {
-      return this.videos;
-    }
-    const lowerCaseFilter = filter.toLowerCase();
-    return this.videos.filter((video) =>
-      video.title.toLowerCase().includes(lowerCaseFilter)
-    );
+    if (!filter.trim()) return this.videos;
+    const lower = filter.toLowerCase();
+    return this.videos.filter(v => v.title.toLowerCase().includes(lower));
   }
 
-  private videos = [
+  /**
+   * Returns up to `limit` videos most relevant to the current question text.
+   * Each video is scored by how many extracted keywords appear in its title.
+   * Falls back to course-topic filtering when no keyword matches are found.
+   */
+  getVideosByQuestion(questionText: string, courseTopic: string, limit = 3): Video[] {
+    const keywords = this.extractKeywords(questionText);
+
+    if (keywords.length === 0) {
+      return this.getVideos(courseTopic).slice(0, limit);
+    }
+
+    const scored = this.videos
+      .map(video => {
+        const titleLower = video.title.toLowerCase();
+        const score = keywords.filter(kw => titleLower.includes(kw)).length;
+        return { video, score };
+      })
+      .filter(s => s.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, limit)
+      .map(s => s.video);
+
+    // Fall back to course-topic if no keyword matched anything
+    return scored.length > 0 ? scored : this.getVideos(courseTopic).slice(0, limit);
+  }
+
+  /**
+   * Strips stop words and short tokens from a question string,
+   * returning meaningful tech keywords to match against video titles.
+   */
+  private extractKeywords(text: string): string[] {
+    const stopWords = new Set([
+      'what', 'which', 'when', 'where', 'how', 'why', 'who',
+      'the', 'is', 'are', 'was', 'were', 'will', 'would', 'could', 'should',
+      'can', 'has', 'have', 'had', 'does', 'did', 'do', 'not',
+      'this', 'that', 'these', 'those', 'and', 'or', 'but',
+      'for', 'with', 'from', 'into', 'about', 'used', 'use', 'using',
+      'you', 'your', 'following', 'below', 'above', 'between', 'true', 'false',
+    ]);
+
+    return text
+      .toLowerCase()
+      .replace(/[^a-z0-9#.\s]/g, ' ')   // keep # (C#) and . (.NET)
+      .split(/\s+/)
+      .filter(word => word.length > 2 && !stopWords.has(word));
+  }
+
+private videos = [
+  {
+    "title": "Stop Using Azure AD B2C! Use Entra External ID for Angular & .NET Now",
+    "description": null,
+    "videoId": "QMP-ukzknb4",
+    "videoUrl": "https://www.youtube.com/watch?v=QMP-ukzknb4"
+  },
+  {
+    "title": "Entra External ID & Angular: Build Your First Secure Login (Hands-On Guide)",
+    "description": null,
+    "videoId": "DZdF2Cp9OHs",
+    "videoUrl": "https://www.youtube.com/watch?v=DZdF2Cp9OHs"
+  },
+  {
+    "title": "Angular + NgRx Tutorial: Build a Dynamic Job Role Recommender App",
+    "description": null,
+    "videoId": "dLbij5m_UbY",
+    "videoUrl": "https://www.youtube.com/watch?v=dLbij5m_UbY"
+  },
+  {
+    "title": "Azure AD B2C is GONE? The NEW Microsoft Entra External ID (Devs NEED to See This!)",
+    "description": null,
+    "videoId": "s8eF6BIUuGc",
+    "videoUrl": "https://www.youtube.com/watch?v=s8eF6BIUuGc"
+  },
+  {
+    "title": "Cracking the Azure Developer Interview: All You Need to Know for Core Azure Services & Security",
+    "description": null,
+    "videoId": "-T37gFC65sY",
+    "videoUrl": "https://www.youtube.com/watch?v=-T37gFC65sY"
+  },
+  {
+    "title": "Cracking the Azure Key Vault Interview: Key Concepts & Practice Questions",
+    "description": null,
+    "videoId": "o6sEK9a4S88",
+    "videoUrl": "https://www.youtube.com/watch?v=o6sEK9a4S88"
+  },
+  {
+    "title": "NgRx Made Simple: Master Angular State Management with a Fun Project for Beginners",
+    "description": null,
+    "videoId": "jhSKUSQX1gw",
+    "videoUrl": "https://www.youtube.com/watch?v=jhSKUSQX1gw"
+  },
+  {
+    "title": "Get Ready For Your Azure Storage Interview With These Tips!",
+    "description": null,
+    "videoId": "2bY6L7fg9YQ",
+    "videoUrl": "https://www.youtube.com/watch?v=2bY6L7fg9YQ"
+  },
+  {
+    "title": "Ace Your Azure App Service Interview: Top Questions & Concise Explanations",
+    "description": null,
+    "videoId": "pe_ReC7D4WI",
+    "videoUrl": "https://www.youtube.com/watch?v=pe_ReC7D4WI"
+  },
+  {
+    "title": "Get Ready to Ace Your Azure App Service Interview!",
+    "description": null,
+    "videoId": "YM5gGfblfzo",
+    "videoUrl": "https://www.youtube.com/watch?v=YM5gGfblfzo"
+  },
+  {
+    "title": "AI Will Replace 50% of Jobs in 5 Years - Are You Ready?",
+    "description": null,
+    "videoId": "lk9lCcPUK3k",
+    "videoUrl": "https://www.youtube.com/watch?v=lk9lCcPUK3k"
+  },
+  {
+    "title": "What is a Component in Angular? | Angular 19 Essentials #shorts",
+    "description": null,
+    "videoId": "GxiyjoaHZwo",
+    "videoUrl": "https://www.youtube.com/watch?v=GxiyjoaHZwo"
+  },
+  {
+    "title": "Conquer Your .NET Core Interview: The ONLY Guide You Need (Web API, Microservices & More!)",
+    "description": null,
+    "videoId": "GtSwwQ8RDNA",
+    "videoUrl": "https://www.youtube.com/watch?v=GtSwwQ8RDNA"
+  },
+  {
+    "title": "10 Azure Functions Questions You NEED To Know!",
+    "description": null,
+    "videoId": "-WgmegLaQ24",
+    "videoUrl": "https://www.youtube.com/watch?v=-WgmegLaQ24"
+  },
+  {
+    "title": "5 Middleware Interview Questions Every .NET Dev Should Know!",
+    "description": null,
+    "videoId": "sAtLTqvc2bM",
+    "videoUrl": "https://www.youtube.com/watch?v=sAtLTqvc2bM"
+  },
+  {
+    "title": "Ace Your .NET Core DI Interview: Top 5 Dependency Injection Questions",
+    "description": null,
+    "videoId": "Cd8DPNA3EaI",
+    "videoUrl": "https://www.youtube.com/watch?v=Cd8DPNA3EaI"
+  },
+  {
+    "title": ".NET Core Microservices Interview Questions: Your Key to Success",
+    "description": null,
+    "videoId": "LfGXAKfrO_Y",
+    "videoUrl": "https://www.youtube.com/watch?v=LfGXAKfrO_Y"
+  },
+  {
+    "title": ".NET Core Web API Interview Questions & Answers: Master the Essentials",
+    "description": null,
+    "videoId": "5YfbqvkWzdY",
+    "videoUrl": "https://www.youtube.com/watch?v=5YfbqvkWzdY"
+  },
+  {
+    "title": "Mastering EF Core in .NET: Model First, Database First, Real-World Queries & CRUD",
+    "description": null,
+    "videoId": "d0of5A3fqDA",
+    "videoUrl": "https://www.youtube.com/watch?v=d0of5A3fqDA"
+  },
+  {
+    "title": "Stop Guessing: The .NET EF Core Interview Questions You MUST Know",
+    "description": null,
+    "videoId": "o-nRtBGIQFo",
+    "videoUrl": "https://www.youtube.com/watch?v=o-nRtBGIQFo"
+  },
+  {
+    "title": "Angular Services Interview Questions & Answers: Ace Your Next Interview",
+    "description": null,
+    "videoId": "fD8lTzaJdnU",
+    "videoUrl": "https://www.youtube.com/watch?v=fD8lTzaJdnU"
+  },
+  {
+    "title": "How To Get A Free Second Chance On Microsoft Exams!",
+    "description": null,
+    "videoId": "8Lha7WO5hMk",
+    "videoUrl": "https://www.youtube.com/watch?v=8Lha7WO5hMk"
+  },
+  {
+    "title": ".NET Core EF Core: Real-World LINQ, Lambda & CRUD (E-commerce Example)",
+    "description": null,
+    "videoId": "GIqW3kfBTEs",
+    "videoUrl": "https://www.youtube.com/watch?v=GIqW3kfBTEs"
+  },
+  {
+    "title": "EF Core Database First: Relationships Explained (One-to-One, Many-to-Many, Real Example)",
+    "description": null,
+    "videoId": "myEOGw-A6cI",
+    "videoUrl": "https://www.youtube.com/watch?v=myEOGw-A6cI"
+  },
+  {
+    "title": "Unlock EF Core Model First in .NET 9 Web API: Your Complete Guide (Tools, Migrations, DTOs)",
+    "description": null,
+    "videoId": "eXURoDVfLEQ",
+    "videoUrl": "https://www.youtube.com/watch?v=eXURoDVfLEQ"
+  },
+  {
+    "title": "Top VS Code Shortcuts Every Developer Should Know: Boost Productivity Fast!",
+    "description": null,
+    "videoId": "oMD6vucKa7s",
+    "videoUrl": "https://www.youtube.com/watch?v=oMD6vucKa7s"
+  },
+  {
+    "title": "Master Angular Debugging in VS Code | Real-World Tips, Tricks & Traps!",
+    "description": null,
+    "videoId": "NQZ0wruubZQ",
+    "videoUrl": "https://www.youtube.com/watch?v=NQZ0wruubZQ"
+  },
+  {
+    "title": "Master Full-Stack Development with Angular, .NET Core & Azure | Build Real-World App",
+    "description": null,
+    "videoId": "zlybQJVLYrQ",
+    "videoUrl": "https://www.youtube.com/watch?v=zlybQJVLYrQ"
+  },
     {
       title: "Secure Your Angular App with Role-Based Authentication | Azure AD B2C & Auth Guards",
       description: null,
@@ -2321,4 +2535,4 @@ export class VideoService {
       videoUrl: "https://www.youtube.com/watch?v=tqjGuKEhK38"
     }
   ];
-}
+  }

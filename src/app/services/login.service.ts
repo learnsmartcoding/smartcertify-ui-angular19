@@ -20,8 +20,9 @@ import { filter } from 'rxjs/operators';
 
 
 import { createClaimsTable } from '../claim-utils';
-import { b2cPolicies } from '../app.config';
 import { Claim } from '../models/claim';
+import { loginRequest } from '../auth.config';
+import { CurrentUserService } from './current-user.service';
 
 @Injectable({ providedIn: 'root' })
 export class LoginService {
@@ -39,6 +40,7 @@ export class LoginService {
   constructor(
     private authService: MsalService,
     private msalBroadcastService: MsalBroadcastService,
+    private currentUserService: CurrentUserService,
     @Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration
   ) {
     this.msalBroadcastService.msalSubject$
@@ -47,9 +49,10 @@ export class LoginService {
       )
       .subscribe((result: EventMessage) => {
         const payload = result.payload as AuthenticationResult;
-        this.authService.instance.setActiveAccount(payload.account);
-        const claims = payload.account.idTokenClaims;
-        this.getClaims(claims);
+        if (payload.account) {
+          this.authService.instance.setActiveAccount(payload.account);
+          this.getClaims(payload.account.idTokenClaims);
+        }
       });
 
     this.msalBroadcastService.inProgress$
@@ -69,22 +72,34 @@ export class LoginService {
     this.isLoggedIn = this.loginDisplay;
   }
 
+  refreshFromMsal(): void {
+    let activeAccount = this.authService.instance.getActiveAccount();
+    const accounts = this.authService.instance.getAllAccounts();
+
+    if (!activeAccount && accounts.length > 0) {
+      activeAccount = accounts[0];
+      this.authService.instance.setActiveAccount(activeAccount);
+    }
+
+    this.setLoginDisplay();
+    this.getClaims(activeAccount?.idTokenClaims);
+  }
+
   getClaims(claims: any) {
     
     if (claims) {
       const claimsTable: Claim[] = createClaimsTable(claims);
       this.claimsSubject.next([...claimsTable]);
 
-      const userIdClaim = claimsTable.find(
-        (f) => f.claim === 'extension_userId'
+      const userIdClaim = claimsTable.find((f) =>
+        ['extension_userId', 'userId', 'user_id'].includes(f.claim)
       );
 
-      // Type check before accessing extension_userRoles property
-      if (
-        'extension_userRoles' in claims &&
-        typeof claims.extension_userRoles === 'string'
-      ) {
-        this.userRoles = claims.extension_userRoles.split(',');
+      const roleClaims = claims.roles ?? claims.extension_userRoles ?? claims.role;
+      if (Array.isArray(roleClaims)) {
+        this.userRoles = roleClaims;
+      } else if (typeof roleClaims === 'string') {
+        this.userRoles = roleClaims.split(',');
       } else {
         this.userRoles = [];
       }
@@ -93,25 +108,28 @@ export class LoginService {
         this.userIdSubject.next(+userIdClaim.value);
         this.userId = +userIdClaim.value;
       }
+      const givenName = claimsTable.find((s) => s.claim === 'given_name')?.value;
+      const familyName = claimsTable.find((s) => s.claim === 'family_name')?.value;
+      const displayName =
+        claimsTable.find((s) => s.claim === 'name')?.value ??
+        claimsTable.find((s) => s.claim === 'preferred_username')?.value ??
+        claimsTable.find((s) => s.claim === 'email')?.value ??
+        '';
       this.userName =
-        claimsTable.filter((s) => s.claim === 'given_name')[0].value +
-        ', ' +
-        claimsTable.filter((s) => s.claim === 'family_name')[0].value;
+        givenName || familyName ? [givenName, familyName].filter(Boolean).join(', ') : displayName;
     } else {
       this.userIdSubject.next(0);
+      this.userId = 0;
       this.claimsSubject.next([]); // No claims available
       this.userRoles = [];
     }
   }
 
   login(userFlowRequest?: RedirectRequest | PopupRequest) {
-    let signUpSignInFlowRequest: RedirectRequest | PopupRequest = {
-      authority: b2cPolicies.authorities.signUpSignIn.authority,
-      prompt: PromptValue.LOGIN, // force user to reauthenticate with their new password
-      scopes: [],
+    userFlowRequest ??= {
+      prompt: PromptValue.LOGIN,
+      scopes: loginRequest.scopes,
     };
-
-    userFlowRequest = signUpSignInFlowRequest;
 
     if (this.msalGuardConfig.interactionType === InteractionType.Popup) {
       if (this.msalGuardConfig.authRequest) {
@@ -146,6 +164,8 @@ export class LoginService {
     const activeAccount =
       this.authService.instance.getActiveAccount() ||
       this.authService.instance.getAllAccounts()[0];
+
+    this.currentUserService.clear();
 
     if (this.msalGuardConfig.interactionType === InteractionType.Popup) {
       this.authService.logoutPopup({

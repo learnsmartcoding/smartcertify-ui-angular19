@@ -19,10 +19,18 @@ export class HttpRequestInterceptor implements HttpInterceptor {
     private toastr: ToastrService
   ) {}
 
+  // Endpoints that manage their own loading state — skip the global spinner for these.
+  private readonly skipSpinnerUrls = ['/Chat/'];
+
   intercept(
     req: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
+    const skip = this.skipSpinnerUrls.some(u => req.url.includes(u));
+    if (skip) {
+      return next.handle(req);
+    }
+
     this.spinner.show();
     //this.toastr.info('Request initiated');
 

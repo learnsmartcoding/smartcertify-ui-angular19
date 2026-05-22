@@ -1,0 +1,90 @@
+<div class="chat-wrapper container py-4">
+  <!-- Header -->
+  <div class="chat-header text-center mb-4">
+    <h2 class="mb-1">🎯 AI Exam Builder</h2>
+    <p class="text-muted mb-0">Powered by Claude AI &amp; MCP</p>
+  </div>
+
+  <!-- Chat Container -->
+  <div class="chat-container mx-auto">
+    <!-- Messages Area -->
+    <div class="messages-area" #messagesContainer>
+      <div *ngFor="let msg of messages" class="message-row" [class.user-row]="msg.role === 'user'">
+
+        <!-- Assistant Message -->
+        <ng-container *ngIf="msg.role === 'assistant'">
+          <div class="d-flex align-items-start gap-2">
+            <span class="avatar">🤖</span>
+            <div class="flex-grow-1">
+              <!-- While typing: show plain text with blinking cursor -->
+              <div *ngIf="msg.isTyping" class="bubble assistant-bubble">
+                {{ msg.content }}<span class="typing-cursor">|</span>
+              </div>
+              <!-- After typing: render full markdown as HTML -->
+              <div *ngIf="!msg.isTyping" class="bubble assistant-bubble markdown-body"
+                   [innerHTML]="msg.renderedContent | markdown">
+              </div>
+              <!-- Start Exam Button -->
+              <div *ngIf="msg.showExamButton && !msg.isTyping" class="mt-2">
+                <button
+                  class="btn btn-success btn-lg w-100 mt-2"
+                  (click)="startExam(msg.examId)"
+                >
+                  🚀 Start Your Exam
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- User Message -->
+        <ng-container *ngIf="msg.role === 'user'">
+          <div class="d-flex justify-content-end">
+            <div class="bubble user-bubble">{{ msg.content }}</div>
+          </div>
+        </ng-container>
+      </div>
+
+      <!-- Loading Indicator -->
+      <div *ngIf="isLoading" class="message-row">
+        <div class="d-flex align-items-start gap-2">
+          <span class="avatar">🤖</span>
+          <div class="bubble assistant-bubble">
+            <div class="typing-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Session Limit -->
+      <div *ngIf="sessionLimitReached" class="alert alert-warning mt-3">
+        Session limit reached. Please refresh to start over.
+      </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="input-area mt-3">
+      <div class="d-flex gap-2">
+        <textarea
+          class="form-control"
+          rows="2"
+          placeholder="Type your message..."
+          [(ngModel)]="userInput"
+          [disabled]="isLoading || sessionLimitReached"
+          (keydown.enter)="onEnterKey($event)"
+        ></textarea>
+        <button
+          class="btn btn-primary send-btn"
+          (click)="sendMessage()"
+          [disabled]="isLoading || sessionLimitReached || !userInput.trim()"
+        >
+          Send
+        </button>
+      </div>
+      <small class="text-muted mt-1 d-block">Press Enter to send, Shift+Enter for new line</small>
+    </div>
+  </div>
+</div>

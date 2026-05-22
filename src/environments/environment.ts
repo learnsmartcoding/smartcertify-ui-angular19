@@ -14,16 +14,17 @@ const serverUrl='https://localhost:7209/api';
 // The list of file replacements can be found in `angular.json`.
 export const environment: EnvironmentConfiguration = {
   env_name: 'dev',
-  production: true,
+  production: false,
   apiUrl: serverUrl,
-  adb2cConfig: {
-    clientId: '588fe00e-c38a-429b-a2bb-911ca90643a7',
-    readScopeUrl: 'https://smartlearnbykarthik.onmicrosoft.com/smartcertify/dev/api/User.Read',
-    writeScopeUrl: 'https://smartlearnbykarthik.onmicrosoft.com/smartcertify/dev/api/User.Write',
-    scopeUrls:[
-      'https://smartlearnbykarthik.onmicrosoft.com/smartcertify/dev/api/User.Read',
-      'https://smartlearnbykarthik.onmicrosoft.com/smartcertify/dev/api/User.Write'
-    ],
+  entraIdConfig: {
+    clientId: 'c7550f4d-936c-442a-90ac-fa5f048d6406',
+    authority: 'https://learnsmartcodingidentity.ciamlogin.com/',
+    redirectUri: 'http://localhost:4200/auth',
+    postLogoutRedirectUri: 'http://localhost:4200/courses',
+    scopeUrls: {
+      userReadScope: 'api://989e8bb2-54fc-4ea4-8747-e0912b045bf0/User.Read',
+      userWriteScope: 'api://989e8bb2-54fc-4ea4-8747-e0912b045bf0/User.Write',
+    },
     apiEndpointUrl: serverUrl
   },
   cacheTimeInMinutes: 30,

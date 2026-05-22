@@ -1,1 +1,93 @@
-<h1> TODO for user learning</h1>
+<div class="question-form-container card shadow">
+  <div class="card-header bg-primary text-white text-center">
+    <h2 class="form-title mb-0">{{ isUpdateMode ? 'Update' : 'Create' }} Question & Choices</h2>
+  </div>
+  <div class="card-body">
+    <form [formGroup]="questionForm" (ngSubmit)="onSubmit()">
+      <!-- Row 1: Course Selection, Difficulty Level, and Toggles -->
+      <div class="form-row top-row">
+        <!-- Course Selection (Select Box) -->
+        <div class="form-group">
+          <label for="courseId">Course</label>
+          <select id="courseId" formControlName="courseId" class="form-control">
+            <option value="-1">Select Course</option>
+            <option *ngFor="let course of courses" [value]="course.courseId">
+              {{ course.title }}
+            </option>
+          </select>
+        </div>
+        <!-- Difficulty Level (Select Box) -->
+        <div class="form-group">
+          <label for="difficultyLevel">Difficulty</label>
+          <select id="difficultyLevel" formControlName="difficultyLevel" class="form-control">
+            <option value="" disabled>Select Difficulty</option>
+            <option *ngFor="let level of difficultyOptions" [value]="level">{{ level }}</option>
+          </select>
+        </div>
+        <!-- Contains Code Toggle (Checkbox) -->
+        <div class="form-check inline-check">
+          <input type="checkbox" formControlName="isCode" id="isCode" class="form-check-input" />
+          <label for="isCode" class="form-check-label">Contains Code</label>
+        </div>
+        <!-- Allows Multiple Answers Toggle (Checkbox) -->
+        <div class="form-check inline-check">
+          <input type="checkbox" formControlName="hasMultipleAnswers" id="hasMultipleAnswers"
+            class="form-check-input" />
+          <label for="hasMultipleAnswers" class="form-check-label">Allows Multiple Answers</label>
+        </div>
+      </div>
+
+      <!-- Row 2: Question Text (Full width) -->
+      <div class="form-group">
+        <label for="questionText">Question Text</label>
+        <textarea id="questionText" formControlName="questionText" class="form-control" rows="4"
+          placeholder="Enter your question here"></textarea>
+      </div>
+
+      <hr />
+
+      <!-- Choices Section -->
+      <div formArrayName="choices" class="choices-container">
+        <h3 class="mb-3">Choices</h3>
+        <div *ngFor="let choiceCtrl of choices.controls; let i = index" [formGroupName]="i"
+          class="choice-item card mb-3 p-3">
+          <div class="choice-row">
+            <!-- Choice Text (Input) -->
+            <textarea type="text" formControlName="choiceText" class="form-control choice-text"
+              placeholder="Enter choice text"></textarea>
+            <!-- Contains Code Toggle for Choice (Checkbox) -->
+            <div class="form-check inline-check choice-check">
+              <input type="checkbox" formControlName="isCode" id="choiceIsCode{{ i }}" class="form-check-input" />
+              <label [for]="'choiceIsCode' + i" class="form-check-label">Code</label>
+            </div>
+            <!-- Correct Answer Toggle for Choice (Checkbox) -->
+            <div class="form-check inline-check choice-check">
+              <input type="checkbox" formControlName="isCorrect" id="choiceIsCorrect{{ i }}" class="form-check-input" />
+              <label [for]="'choiceIsCorrect' + i" class="form-check-label">Correct</label>
+            </div>
+            <!-- Remove Choice Button -->
+            <button type="button" class="btn btn-danger btn-sm remove-btn" (click)="removeChoice(i)">✖</button>
+          </div><br>
+
+          <!-- Show answerDetails only if isCorrect is true -->
+          <div class="choice-row" *ngIf="choiceCtrl.get('isCorrect')?.value">
+            <textarea type="text" formControlName="answerDetails" class="form-control choice-text"
+              placeholder="Enter answer explanation text"></textarea>
+          </div>
+        </div>
+        <button type="button" class="btn btn-secondary mt-2" (click)="addChoice()">+ Add Choice</button>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="text-center mt-4">
+        <button type="submit" class="btn btn-primary" [disabled]="questionForm.invalid">
+          {{ isUpdateMode ? 'Update Question' : 'Create Question' }}
+        </button>
+        <!-- &nbsp;
+        <button type="submit" class="btn btn-primary" [disabled]="questionForm.invalid">
+          {{ isUpdateMode ? 'Update Question' : 'Create Question & Continue' }}
+        </button> -->
+      </div>
+    </form>
+  </div>
+</div>

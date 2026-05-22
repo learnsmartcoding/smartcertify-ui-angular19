@@ -57,4 +57,7 @@ body {
       margin-bottom: 1rem;
     }
   }
+  .container.py-4 {
+    scroll-margin-top: 80px;
+  }
   

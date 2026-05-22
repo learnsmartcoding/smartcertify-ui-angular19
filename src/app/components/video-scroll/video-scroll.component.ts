@@ -18,14 +18,23 @@ import { Video, VideoService } from '../../services/video.service';
 export class VideoScrollComponent implements OnInit, OnChanges {
   referenceVideos: Video[] = [];
   @Input() courseTopic: string = '';
+  @Input() questionText: string = '';
+
   constructor(private videoService: VideoService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.referenceVideos = this.videoService.getVideos(this.courseTopic);
+    this.loadVideos();
   }
 
   ngOnInit() {
-    this.referenceVideos = this.videoService.getVideos(this.courseTopic);
+    this.loadVideos();
+  }
+
+  private loadVideos(): void {
+    this.referenceVideos = this.videoService.getVideosByQuestion(
+      this.questionText,
+      this.courseTopic
+    );
   }
 
   // Extract YouTube video ID and generate thumbnail URL

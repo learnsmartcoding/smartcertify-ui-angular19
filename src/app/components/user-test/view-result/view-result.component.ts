@@ -1,13 +1,11 @@
-import { Component } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { ToastrService, IndividualConfig } from 'ngx-toastr';
-import { ExamFeedback } from '../../../models/exam-models';
-import { ExamService } from '../../../services/exam.service';
+import { ChangeDetectorRef, Component, NgZone } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { ExamDetailsComponent } from "../exam-details/exam-details.component";
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-view-result',
-  imports: [ExamDetailsComponent],
+  imports: [ExamDetailsComponent, CommonModule],
   templateUrl: './view-result.component.html',
   styleUrl: './view-result.component.css'
 })
@@ -16,11 +14,16 @@ export class ViewResultComponent {
   showCertificate = false;
 
   constructor(
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private ngZone: NgZone,
+    private changeDetectorRef: ChangeDetectorRef
   ) {
     // Get examId from query parameters
     this.route.queryParams.subscribe((params) => {
-      this.examId = params['examId'];
+      this.ngZone.run(() => {
+        this.examId = Number(params['examId']) || 0;
+        this.changeDetectorRef.detectChanges();
+      });
     });
   }
 

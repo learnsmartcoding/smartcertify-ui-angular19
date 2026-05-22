@@ -1,1 +1,66 @@
-<h1> TODO for user learning</h1>
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Questions List</h2>
+    <button class="btn btn-success" (click)="createQuestion()">
+      <i class="bi bi-plus-circle"></i> Create Question
+    </button>
+  </div>
+
+  <!-- 🔽 Filters -->
+  <div class="row g-3 mb-3">
+    <div class="col-md-6">
+      <select class="form-select" [(ngModel)]="selectedCourseId" (change)="filterQuestions()">
+        <option value="">All Courses</option>
+        <option *ngFor="let course of courses" [value]="course.courseId">
+          {{ course.title }}
+        </option>
+      </select>
+    </div>
+    <div class="col-md-6">
+      <select class="form-select" [(ngModel)]="selectedDifficulty" (change)="filterQuestions()">
+        <option value="">All Difficulty Levels</option>
+        <option value="Beginner">Beginner</option>
+        <option value="Intermediate">Intermediate</option>
+        <option value="Advance">Advance</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- 🔽 Questions Table -->
+  <div class="table-responsive auto-height">
+    <table class="table table-hover table-bordered shadow-sm">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Question</th>
+          <th>Difficulty</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let question of filteredQuestions; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ question.questionText }}</td>
+          <td>
+            <span [class]="getDifficultyClass(question.difficultyLevel)">
+              {{ question.difficultyLevel }}
+            </span>
+          </td>
+          <td class="text-center">
+            <div class="btn-group">
+              <button class="btn btn-primary btn-sm" (click)="editQuestion(question.questionId)">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button class="btn btn-danger btn-sm" (click)="deleteQuestion(question.questionId)">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="filteredQuestions.length === 0">
+          <td colspan="4" class="text-center text-muted">No questions match the selected filters.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
